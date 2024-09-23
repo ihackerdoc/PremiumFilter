@@ -10,6 +10,7 @@ from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
+from utils import get_chat_member  
 from database.connections_mdb import active_connection
 import re
 import json
@@ -17,6 +18,20 @@ import base64
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
+
+
+async def some_command_handler(update, context):
+    user_id = update.effective_user.id
+    chat_id = AUTH_CHANNEL  # or another channel ID
+
+    member = await get_chat_member(context.bot, chat_id, user_id)
+    if member:
+        # Process member info
+        await update.message.reply_text(f"Welcome, {member.user.first_name}!")
+    else:
+        # Handle the case where member info couldn't be retrieved
+        await update.message.reply_text("Could not fetch member info.")
+
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
